@@ -11,7 +11,7 @@ database_id = "163f4050-3672-42d3-afed-4d2b37b9ad93"
 [vars]
 EVENT_NAME = "OAFI 2026"
 # Orígenes que pueden llamar a la API, separados por comas (la URL pública del juego).
-ALLOWED_ORIGINS = "http://localhost:5173"
+ALLOWED_ORIGINS = "https://vitebamarketing.github.io,http://localhost:5173"
 # "true" muestra la opción de jugar sin dejar datos (no cuenta como lead).
 ALLOW_ANONYMOUS = "false"
 
