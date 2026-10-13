@@ -1,0 +1,3 @@
+{ "name": "reto-viteba-tools", "private": true, "type": "module",
+  "scripts": { "images": "node optimize-images.mjs" },
+  "devDependencies": { "sharp": "^0.34.0" } }

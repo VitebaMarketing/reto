@@ -1,0 +1,22 @@
+name = "reto-viteba-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "reto-viteba"
+# Sustituir por el id que devuelve `wrangler d1 create reto-viteba --jurisdiction eu`
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[vars]
+EVENT_NAME = "OAFI 2026"
+# Orígenes que pueden llamar a la API, separados por comas (la URL pública del juego).
+ALLOWED_ORIGINS = "http://localhost:5173"
+# "true" muestra la opción de jugar sin dejar datos (no cuenta como lead).
+ALLOW_ANONYMOUS = "false"
+
+[observability]
+enabled = true
+
+# Secretos (nunca en este archivo): SESSION_SECRET, HASH_PEPPER, STAFF_PASSWORD, ADMIN_PASSWORD
+#   wrangler secret put STAFF_PASSWORD

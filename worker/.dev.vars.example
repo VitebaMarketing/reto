@@ -1,0 +1,5 @@
+# Copia este archivo como .dev.vars para desarrollo local. NO subir .dev.vars al repositorio.
+SESSION_SECRET=cadena-aleatoria-larga
+HASH_PEPPER=otra-cadena-aleatoria-larga
+STAFF_PASSWORD=clave-de-las-azafatas
+ADMIN_PASSWORD=clave-de-marketing-para-exportar

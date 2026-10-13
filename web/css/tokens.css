@@ -1,0 +1,75 @@
+/* El Reto Viteba · sistema de diseño (colores, tipografía, medidas, curvas de movimiento) */
+
+@font-face {
+  font-family: 'Zalando Sans SemiExpanded';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('../assets/fonts/zalando-semiexpanded-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Zalando Sans SemiExpanded';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('../assets/fonts/zalando-semiexpanded-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  /* Marca */
+  --lime: #E2EF8F;
+  --lime-deep: #CDE05A;
+  --lime-soft: #EEF5C4;
+  --carbon: #272727;
+  --carbon-soft: #55534F;
+  --paper: #F4F2EE;
+  --cream: #EAE5DA;
+  --white: #FFFFFF;
+
+  /* Respuestas: verde y rojo suaves, siempre acompañados de icono y texto */
+  --true-bg: #DCEFA0;
+  --true-edge: #A9BF3F;
+  --false-bg: #F8CFC4;
+  --false-edge: #DC8C78;
+  --warn-bg: #FBE3B5;
+
+  --font: 'Zalando Sans SemiExpanded', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Escala de letra: se adapta al lado más corto de la pantalla; --text-scale es el botón A+ */
+  --text-scale: 1;
+  --fs-display: calc(clamp(3rem, min(8.6vw, 15vh), 8.4rem) * var(--text-scale));
+  --fs-display-md: calc(clamp(2.6rem, min(6.8vw, 11vh), 6rem) * var(--text-scale));
+  --fs-title: calc(clamp(2rem, min(4.6vw, 7vh), 3.8rem) * var(--text-scale));
+  --fs-lead: calc(clamp(1.5rem, min(2.8vw, 4.4vh), 2.4rem) * var(--text-scale));
+  --fs-lead-xl: calc(clamp(1.75rem, min(3.4vw, 5.2vh), 2.9rem) * var(--text-scale));
+  --fs-question: calc(clamp(1.75rem, min(3.7vw, 5.6vh), 3.1rem) * var(--text-scale));
+  --fs-body: calc(clamp(1.25rem, min(2.1vw, 3.2vh), 1.75rem) * var(--text-scale));
+  --fs-small: calc(clamp(1.0625rem, min(1.6vw, 2.4vh), 1.3rem) * var(--text-scale));
+  --fs-button: calc(clamp(1.5rem, min(3vw, 4.6vh), 2.5rem) * var(--text-scale));
+  --fs-answer: calc(clamp(1.7rem, min(3.8vw, 5.4vh), 3.2rem) * var(--text-scale));
+
+  --pad: clamp(1.25rem, min(4vw, 5vh), 4rem);
+  --gap: clamp(1rem, min(2.4vw, 3vh), 2.25rem);
+  --radius-card: clamp(1.5rem, 3vw, 2.75rem);
+  --topbar-h: clamp(4.5rem, 10vh, 6rem);
+
+  --shadow-card: 0 2px 6px rgba(39, 39, 39, 0.05), 0 18px 48px rgba(39, 39, 39, 0.1);
+  --shadow-button: 0 4px 0 rgba(39, 39, 39, 0.18), 0 14px 30px rgba(39, 39, 39, 0.16);
+  --shadow-glow: 0 0 0 10px rgba(226, 239, 143, 0.55), 0 18px 44px rgba(39, 39, 39, 0.28);
+
+  /* Curvas de velocidad (equivalentes a "easy ease" de After Effects con mucha influencia) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Desenfoque de movimiento. La clase .lite (tablets lentas) lo pone a cero. */
+  --mb: 14px;
+  --mb-fast: 22px;
+  --stagger: 75ms;
+}
+
+html[data-text='large'] { --text-scale: 1.14; }
+html.lite { --mb: 0px; --mb-fast: 0px; }

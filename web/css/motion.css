@@ -1,0 +1,164 @@
+/* El Reto Viteba · movimiento
+   Solo se animan transform, opacity y filter (capa de composición → 60 fps).
+   El desenfoque de movimiento se apoya en --mb / --mb-fast: con .lite vale 0 y desaparece. */
+
+/* ---------- Entradas y salidas de pantalla ---------- */
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translate3d(0, 3.5rem, 0) scale(0.965); filter: blur(var(--mb)); }
+  55% { filter: blur(0); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes rise-out {
+  to { opacity: 0; transform: translate3d(0, -2.75rem, 0) scale(0.985); filter: blur(var(--mb)); }
+}
+/* Barrido horizontal con deformación de velocidad (inclinación + estirado), como un "whip pan". */
+@keyframes sweep-in {
+  from { opacity: 0; transform: translate3d(24vw, 0, 0) skewX(-9deg) scaleX(1.1); filter: blur(var(--mb-fast)); }
+  45% { opacity: 1; }
+  70% { filter: blur(0); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes sweep-out {
+  to { opacity: 0; transform: translate3d(-24vw, 0, 0) skewX(-9deg) scaleX(1.1); filter: blur(var(--mb-fast)); }
+}
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.55); filter: blur(var(--mb)); }
+  60% { opacity: 1; transform: scale(1.06); filter: blur(0); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes fade-out { to { opacity: 0; } }
+
+.screen.is-entering [data-anim] {
+  animation: rise-in 0.85s var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+.screen.is-leaving { animation: rise-out 0.34s var(--ease-in) forwards; pointer-events: none; }
+
+.step.is-entering [data-anim], .step.is-entering.step--center > * {
+  animation: rise-in 0.7s var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+.step.is-leaving { animation: rise-out 0.26s var(--ease-in) forwards; pointer-events: none; }
+.step--center.is-entering .badge-icon { animation: pop-in 0.7s var(--ease-out) backwards; }
+
+/* ---------- Bienvenida: animación ambiental ---------- */
+
+@keyframes scene-drift {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.09) translate3d(-1.2%, -1%, 0); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+@keyframes sheen {
+  0%, 62% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+.welcome.is-active .welcome__scene { animation: scene-drift 16s var(--ease-in-out) infinite alternate; }
+.welcome.is-active:not(.is-entering) .cta { animation: breathe 2.8s ease-in-out infinite; }
+.welcome.is-active .cta::before { animation: sheen 4.2s var(--ease-in-out) infinite; }
+
+/* ---------- Registro ---------- */
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -1.6vmin, 0) rotate(2.5deg); }
+}
+@keyframes shake {
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+.spinner { animation: spin 0.9s linear infinite; }
+.register.is-active .register__deco { animation: float 7s ease-in-out infinite; }
+.field.is-invalid { animation: shake 0.42s var(--ease-out); }
+
+/* ---------- Preparación ---------- */
+
+.ready.is-active:not(.is-entering) .ready__art { animation: float 6s ease-in-out infinite; }
+
+@keyframes count-pop {
+  0% { opacity: 0; transform: scale(2.1); filter: blur(var(--mb-fast)); }
+  28% { opacity: 1; transform: scale(1); filter: blur(0); }
+  78% { opacity: 1; transform: scale(0.96); filter: blur(0); }
+  100% { opacity: 0; transform: scale(0.6); filter: blur(var(--mb)); }
+}
+.countdown { animation: rise-in 0.3s var(--ease-out) backwards; }
+.countdown.is-leaving { animation: fade-out 0.3s var(--ease-in) forwards; }
+.countdown span { display: block; animation: count-pop 0.62s var(--ease-in-out) both; }
+
+/* ---------- Juego ---------- */
+
+.question.is-entering { animation: sweep-in 0.72s var(--ease-out) backwards; }
+.question.is-leaving { animation: sweep-out 0.36s var(--ease-in) forwards; }
+.answers.is-entering .answer { animation: rise-in 0.7s var(--ease-out) backwards; }
+.answers.is-entering .answer:nth-child(1) { animation-delay: 0.18s; }
+.answers.is-entering .answer:nth-child(2) { animation-delay: 0.26s; }
+.answers.is-leaving { animation: rise-out 0.3s var(--ease-in) forwards; }
+
+@keyframes chosen {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.93); }
+  100% { transform: scale(1.02); }
+}
+.answer.is-chosen { animation: chosen 0.5s var(--ease-spring) forwards; }
+
+.feedback.is-entering .feedback__badge { animation: pop-in 0.6s var(--ease-out) backwards; }
+.feedback.is-entering .feedback__text { animation: rise-in 0.7s var(--ease-out) 0.12s backwards; }
+.next.is-entering { animation: rise-in 0.6s var(--ease-out) 0.15s backwards; }
+/* Sin avance automático: el botón late suavemente para invitar a pulsarlo. */
+.next.is-waiting { animation: rise-in 0.6s var(--ease-out) 0.15s backwards, breathe 2.8s ease-in-out 1s infinite; }
+
+@keyframes fill-x { to { transform: scaleX(1); } }
+.next.is-counting .next__fill { animation: fill-x var(--feedback-ms, 6000ms) linear forwards; }
+
+@keyframes timer-fill { to { stroke-dashoffset: 0; } }
+.timer.is-running .timer__ring { animation: timer-fill var(--timer-s, 15s) linear forwards; }
+.timer.is-paused .timer__ring { animation-play-state: paused; }
+
+/* ---------- Recompensa ---------- */
+
+@keyframes prize-in {
+  0% { opacity: 0; transform: translate3d(0, -40%, 0) scale(0.7); filter: blur(var(--mb-fast)); }
+  60% { opacity: 1; transform: translate3d(0, 3%, 0) scale(1.03); filter: blur(0); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes ring-spin { to { transform: rotateY(-360deg); } }
+@keyframes face-front {
+  from { transform: rotateY(calc(-1 * var(--a))); }
+  to { transform: rotateY(calc(360deg - var(--a))); }
+}
+.reward.is-entering .carousel { animation: prize-in 1.1s var(--ease-out) 0.55s backwards; }
+.reward.is-active .carousel__ring { animation: ring-spin 12s linear infinite; }
+.reward.is-active .carousel__item img { animation: face-front 12s linear infinite; }
+.reward.is-entering .reward__stage { animation-name: pop-in; animation-duration: 1s; }
+
+.toast { animation: pop-in 0.5s var(--ease-out) backwards; }
+.toast.is-leaving { animation: fade-out 0.3s var(--ease-in) forwards; }
+
+.dialog[open] { animation: pop-in 0.42s var(--ease-out) backwards; }
+.dialog[open]::backdrop { animation: backdrop-in 0.3s ease-out backwards; }
+@keyframes backdrop-in { from { opacity: 0; } }
+
+/* ---------- Movimiento reducido (sistema o menú del personal) ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important; transition-duration: 0.01ms !important;
+  }
+  .next.is-counting .next__fill { animation-duration: var(--feedback-ms, 6000ms) !important; }
+  .timer.is-running .timer__ring { animation-duration: var(--timer-s, 15s) !important; }
+  .hold.is-holding .hold__fill { transition-duration: var(--hold-ms, 1200ms) !important; }
+}
+html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after {
+  animation-duration: 0.01ms !important; animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important; transition-duration: 0.01ms !important;
+}
+html.reduce-motion .next.is-counting .next__fill { animation-duration: var(--feedback-ms, 6000ms) !important; }
+html.reduce-motion .timer.is-running .timer__ring { animation-duration: var(--timer-s, 15s) !important; }
+html.reduce-motion .hold.is-holding .hold__fill { transition-duration: var(--hold-ms, 1200ms) !important; }

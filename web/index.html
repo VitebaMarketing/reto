@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F4F2EE">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reto Viteba">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="format-detection" content="telephone=no">
+  <title>El Reto Viteba · ¿Verdadero o falso?</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/img/icon-180.png">
+  <link rel="preload" href="assets/fonts/zalando-semiexpanded-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/img/escena.webp" as="image">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/motion.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <canvas class="confetti" id="confetti" aria-hidden="true" hidden></canvas>
+
+    <header class="topbar">
+      <button class="topbar__logo" id="logo" type="button" aria-label="Viteba. Menú del personal: mantener pulsado">
+        <img src="assets/img/viteba-logo.svg" alt="" width="143" height="33">
+      </button>
+      <div class="progress" id="progress" hidden>
+        <p class="progress__label" id="progress-label"></p>
+        <ol class="progress__bar" id="progress-bar" aria-hidden="true"></ol>
+      </div>
+      <div class="topbar__controls">
+        <button class="icon-btn" id="text-toggle" type="button" aria-pressed="false">
+          <span aria-hidden="true" class="icon-btn__text">A<sup>+</sup></span>
+        </button>
+        <button class="icon-btn" id="sound-toggle" type="button" aria-pressed="true">
+          <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="m16 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+
+      <!-- 1 · Bienvenida -->
+      <section class="screen welcome is-active" data-screen="welcome" aria-labelledby="welcome-title">
+        <img class="welcome__scene" src="assets/img/escena.webp" alt="" width="1672" height="941" decoding="async">
+        <div class="welcome__content">
+          <p class="welcome__eyebrow" data-anim>
+            <span class="pill pill--dark" data-copy="welcome.kicker"></span>
+            <span data-copy="welcome.eyebrow"></span>
+          </p>
+          <h1 class="display" id="welcome-title" tabindex="-1" data-anim data-copy="welcome.title"></h1>
+          <p class="lead" data-anim data-copy="welcome.claim"></p>
+          <ul class="facts" id="welcome-facts" data-anim></ul>
+          <button class="btn btn--giant cta" type="button" data-action="start" data-anim>
+            <span data-copy="welcome.cta"></span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <button class="export-btn" type="button" data-action="export" aria-label="Exportar participantes a Excel (solo administración)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Exportar</span>
+        </button>
+      </section>
+
+      <!-- 2 · Registro -->
+      <section class="screen register" data-screen="register" aria-labelledby="register-title" hidden>
+        <img class="register__deco" src="assets/img/forma.webp" alt="" width="900" height="900" loading="lazy" decoding="async">
+
+        <div class="step" data-step="choose">
+          <h2 class="title" id="register-title" tabindex="-1" data-anim data-copy="register.title"></h2>
+          <p class="subtitle" data-anim data-copy="register.subtitle"></p>
+          <div class="choices" data-anim>
+            <button class="choice" type="button" data-action="choose" data-type="email">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="10" width="38" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="m7 14 17 13 17-13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-copy="register.email"></span>
+            </button>
+            <button class="choice" type="button" data-action="choose" data-type="phone">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="13" y="4" width="22" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="3.2"/><circle cx="24" cy="36.5" r="2.2" fill="currentColor"/></svg>
+              <span data-copy="register.phone"></span>
+            </button>
+          </div>
+          <button class="text-link" type="button" data-action="anonymous" id="anonymous-link" data-anim hidden data-copy="register.anonymous"></button>
+        </div>
+
+        <form class="step reg-form" data-step="form" id="reg-form" novalidate autocomplete="off" hidden>
+          <button class="back" type="button" data-action="back">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-copy="register.back"></span>
+          </button>
+          <label class="title title--form" for="contact-input" id="contact-label" data-anim></label>
+          <div class="field" data-anim>
+            <select class="field__prefix" id="prefix" hidden></select>
+            <input class="field__input" id="contact-input" name="rv-contact" type="text"
+                   autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+                   aria-describedby="field-error" enterkeyhint="done">
+          </div>
+          <div class="chips" id="domain-chips" data-anim hidden></div>
+          <p class="field-error" id="field-error" role="alert"></p>
+          <label class="consent" data-anim>
+            <input type="checkbox" id="consent" name="rv-consent">
+            <span class="consent__box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="consent__text" id="consent-text"></span>
+          </label>
+          <div class="reg-form__footer" data-anim>
+            <p class="privacy-note">
+              <span data-copy="register.privacyNote"></span>
+              <button class="text-link text-link--inline" type="button" data-action="privacy" data-copy="register.privacyMore"></button>
+            </p>
+            <button class="btn btn--giant" type="submit">
+              <span data-copy="register.submit"></span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </form>
+
+        <div class="step step--center" data-step="saving" hidden>
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="title" role="status" data-copy="register.saving"></p>
+        </div>
+
+        <div class="step step--center" data-step="error" hidden>
+          <div class="badge-icon badge-icon--warn" aria-hidden="true">!</div>
+          <h2 class="title" tabindex="-1" id="save-error-title" data-copy="errors.saveTitle"></h2>
+          <p class="subtitle" id="save-error-text"></p>
+          <div class="row">
+            <button class="btn btn--ghost" type="button" data-action="cancel-register" data-copy="errors.cancel"></button>
+            <button class="btn btn--giant" type="button" data-action="retry-register" data-copy="errors.retry"></button>
+          </div>
+        </div>
+
+        <div class="step step--center" data-step="ok" hidden>
+          <div class="badge-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <p class="title title--xl" role="status" data-copy="register.ok"></p>
+        </div>
+      </section>
+
+      <!-- 3 · Preparación -->
+      <section class="screen ready" data-screen="ready" aria-labelledby="ready-title" hidden>
+        <img class="ready__art" src="assets/img/vf-iconos.webp" alt="" width="900" height="900" loading="lazy" decoding="async" data-anim>
+        <div class="ready__content">
+          <h2 class="display display--md" id="ready-title" tabindex="-1" data-anim data-copy="ready.title"></h2>
+          <p class="lead lead--xl" data-anim data-copy="ready.text"></p>
+          <button class="btn btn--giant" type="button" data-action="begin" data-anim>
+            <span data-copy="ready.cta"></span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="countdown" id="countdown" aria-hidden="true" hidden><span id="countdown-number"></span></div>
+      </section>
+
+      <!-- 4-6 · Juego -->
+      <section class="screen game" data-screen="game" aria-label="Pregunta" hidden>
+        <article class="card question" id="question">
+          <div class="question__body">
+            <div class="question__meta">
+              <span class="pill" id="q-topic"></span>
+              <svg class="timer" id="timer" viewBox="0 0 44 44" aria-hidden="true">
+                <circle cx="22" cy="22" r="18" class="timer__track"/>
+                <circle cx="22" cy="22" r="18" class="timer__ring" pathLength="100"/>
+              </svg>
+            </div>
+            <p class="question__text" id="q-text" tabindex="-1"></p>
+            <div class="feedback" id="feedback" hidden>
+              <p class="feedback__badge" id="feedback-badge"></p>
+              <p class="feedback__text" id="feedback-text"></p>
+            </div>
+          </div>
+          <img class="question__img" id="q-img" alt="" width="900" height="900" decoding="async" hidden>
+        </article>
+
+        <div class="answers" id="answers">
+          <button class="answer answer--true" type="button" data-answer="true">
+            <span class="answer__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span data-copy="game.trueLabel"></span>
+          </button>
+          <button class="answer answer--false" type="button" data-answer="false">
+            <span class="answer__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6.5 6.5 11 11m0-11-11 11" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg></span>
+            <span data-copy="game.falseLabel"></span>
+          </button>
+        </div>
+
+        <button class="btn btn--giant next" id="next" type="button" hidden>
+          <span class="next__fill" aria-hidden="true"></span>
+          <span class="next__label" id="next-label"></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </section>
+
+      <!-- 7-8 · Recompensa y entrega -->
+      <section class="screen reward" data-screen="reward" aria-labelledby="reward-title" hidden>
+        <div class="reward__header">
+          <p data-anim><span class="pill pill--dark" data-copy="reward.kicker"></span></p>
+          <h2 class="display display--reward" id="reward-title" tabindex="-1" data-anim data-copy="reward.title"></h2>
+        </div>
+        <div class="reward__content">
+          <p class="lead lead--xl" data-anim data-copy="reward.claim"></p>
+          <p class="instruction" data-anim>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 14.6 9l6 .8-4.4 4.2 1.1 6-5.3-2.9L6.7 20l1.1-6L3.4 9.8l6-.8z" fill="currentColor"/></svg>
+            <span data-copy="reward.instruction"></span>
+          </p>
+          <p class="reward__meta" data-anim>
+            <span id="reward-score"></span>
+            <span class="reward__code"><span data-copy="reward.code"></span> <b id="reward-code"></b></span>
+          </p>
+        </div>
+        <div class="reward__stage" data-anim>
+          <img class="reward__podium" src="assets/img/podio.webp" alt="" width="1100" height="1100" loading="lazy" decoding="async">
+          <div class="carousel" id="prizes" role="img"><div class="carousel__ring" id="prizes-ring"></div></div>
+        </div>
+        <button class="hold" id="deliver" type="button" data-anim>
+          <span class="hold__fill" aria-hidden="true"></span>
+          <span class="hold__label" id="deliver-label"></span>
+          <span class="hold__hint" id="deliver-hint"></span>
+        </button>
+      </section>
+    </main>
+
+    <p class="demo-badge" id="demo-badge" hidden></p>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <p class="sr-only" id="live" aria-live="polite"></p>
+  </div>
+
+  <!-- Información de privacidad -->
+  <dialog class="dialog dialog--wide" id="privacy-dialog" aria-labelledby="privacy-title">
+    <h2 class="dialog__title" id="privacy-title"></h2>
+    <dl class="privacy-list" id="privacy-list"></dl>
+    <button class="btn" type="button" data-close id="privacy-close"></button>
+  </dialog>
+
+  <!-- ¿Sigues ahí? -->
+  <dialog class="dialog" id="idle-dialog" aria-labelledby="idle-title">
+    <h2 class="dialog__title dialog__title--xl" id="idle-title" data-copy="idle.title"></h2>
+    <p class="dialog__text" id="idle-seconds"></p>
+    <button class="btn btn--giant" type="button" data-close data-copy="idle.cta"></button>
+  </dialog>
+
+  <!-- Entrega no registrada -->
+  <dialog class="dialog" id="deliver-error-dialog" aria-labelledby="deliver-error-title">
+    <h2 class="dialog__title" id="deliver-error-title" data-copy="reward.deliverErrorTitle"></h2>
+    <p class="dialog__text"><span data-copy="reward.deliverErrorText"></span> <b id="deliver-error-code"></b></p>
+    <div class="row">
+      <button class="btn btn--ghost" type="button" data-action="deliver-skip" data-copy="reward.deliverSkip"></button>
+      <button class="btn" type="button" data-action="deliver-retry" data-copy="reward.deliverRetry"></button>
+    </div>
+  </dialog>
+
+  <!-- Menú del personal (logo pulsado 1,5 s) -->
+  <dialog class="dialog" id="staff-dialog" aria-labelledby="staff-title">
+    <h2 class="dialog__title" id="staff-title">Menú del personal</h2>
+    <p class="dialog__status" id="staff-status"></p>
+    <div class="staff-actions">
+      <button class="btn" type="button" data-action="staff-reset">Reiniciar partida</button>
+      <button class="btn btn--ghost" type="button" data-action="staff-fullscreen">Pantalla completa</button>
+      <button class="btn btn--ghost" type="button" data-action="staff-motion" id="staff-motion" aria-pressed="false">Movimiento reducido</button>
+      <a class="btn btn--ghost" href="staff.html" target="_blank" rel="noopener">Abrir panel de control</a>
+      <button class="btn btn--ghost" type="button" data-action="staff-deactivate">Desactivar esta tablet</button>
+    </div>
+    <button class="text-link" type="button" data-close>Cerrar</button>
+  </dialog>
+
+  <!-- Exportar a Excel (solo administración) -->
+  <dialog class="dialog" id="export-dialog" aria-labelledby="export-title">
+    <form id="export-form" autocomplete="off">
+      <h2 class="dialog__title" id="export-title">Exportar participantes</h2>
+      <p class="dialog__text">Descarga un Excel con todos los participantes. Solo administración de Viteba.</p>
+      <label class="dialog__label" for="export-password">Clave de administración</label>
+      <input class="dialog__input" id="export-password" type="password" autocomplete="off" required>
+      <p class="field-error" id="export-msg" role="alert"></p>
+      <button class="btn" type="submit" id="export-submit">Descargar Excel</button>
+    </form>
+    <button class="text-link" type="button" data-close>Cerrar</button>
+  </dialog>
+
+  <!-- Activación de la tablet (solo personal) -->
+  <dialog class="dialog" id="activate-dialog" aria-labelledby="activate-title">
+    <form id="activate-form" autocomplete="off">
+      <h2 class="dialog__title" id="activate-title">Activar esta tablet</h2>
+      <p class="dialog__text">Solo personal de Viteba. Introduce la clave del evento para empezar a registrar participantes.</p>
+      <label class="dialog__label" for="activate-device">Nombre de la tablet</label>
+      <input class="dialog__input" id="activate-device" type="text" value="Tablet 1" maxlength="30">
+      <label class="dialog__label" for="activate-password">Clave del personal</label>
+      <input class="dialog__input" id="activate-password" type="password" autocomplete="off" required>
+      <p class="field-error" id="activate-error" role="alert"></p>
+      <button class="btn btn--giant" type="submit">Activar</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

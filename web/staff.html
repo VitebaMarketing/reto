@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#F4F2EE">
+  <title>Panel del personal · El Reto Viteba</title>
+  <link rel="icon" href="assets/img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/staff.css">
+</head>
+<body>
+  <!-- Acceso -->
+  <main class="login" id="login">
+    <form class="login__card" id="login-form" autocomplete="off">
+      <img src="assets/img/viteba-logo.svg" alt="Viteba" width="143" height="33">
+      <h1>Panel del personal</h1>
+      <p>El Reto Viteba · <span data-event></span></p>
+      <label for="password">Clave</label>
+      <input id="password" type="password" autocomplete="off" required>
+      <p class="error" id="login-error" role="alert"></p>
+      <button class="btn" type="submit">Entrar</button>
+      <p class="hint" id="login-hint"></p>
+    </form>
+  </main>
+
+  <!-- Panel -->
+  <div class="panel" id="panel" hidden>
+    <header class="panel__top">
+      <img src="assets/img/viteba-logo.svg" alt="Viteba" width="143" height="33">
+      <div class="panel__title">
+        <h1>El Reto Viteba · <span data-event></span></h1>
+        <p class="status" id="status" role="status"><span class="dot"></span><span id="status-text">Conectando…</span></p>
+      </div>
+      <div class="panel__actions">
+        <span class="role" id="role"></span>
+        <button class="btn btn--ghost" type="button" id="refresh">Actualizar</button>
+        <button class="btn btn--ghost" type="button" id="logout">Salir</button>
+      </div>
+    </header>
+
+    <main class="panel__main">
+      <section aria-labelledby="h-funnel">
+        <h2 id="h-funnel">Participación</h2>
+        <div class="tiles" id="tiles-funnel"></div>
+      </section>
+
+      <section aria-labelledby="h-leads">
+        <h2 id="h-leads">Contactos</h2>
+        <div class="tiles" id="tiles-leads"></div>
+        <p class="note">«Contactos recopilados» son todos los que han participado. Solo los «aptos para comunicaciones comerciales» marcaron la casilla de consentimiento y pueden recibir marketing.</p>
+      </section>
+
+      <section aria-labelledby="h-ops">
+        <h2 id="h-ops">Stand</h2>
+        <div class="tiles" id="tiles-ops"></div>
+      </section>
+
+      <section aria-labelledby="h-deliver">
+        <h2 id="h-deliver">Entrega manual</h2>
+        <form class="inline-form" id="deliver-form" autocomplete="off">
+          <label for="deliver-code">Código de participación</label>
+          <input id="deliver-code" type="text" placeholder="V-XXXXX" maxlength="7" autocapitalize="characters" required>
+          <button class="btn" type="submit">Marcar muestra entregada</button>
+          <p class="inline-form__msg" id="deliver-msg" role="status"></p>
+        </form>
+      </section>
+
+      <section aria-labelledby="h-list">
+        <h2 id="h-list">Últimas participaciones</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Hora</th><th>Código</th><th>Contacto</th><th>Comercial</th><th>Estado</th><th>Aciertos</th><th>Muestra</th></tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <p class="note">Los contactos se muestran enmascarados. El listado completo solo está disponible en la exportación del perfil administrador.</p>
+      </section>
+
+      <section aria-labelledby="h-export" id="export-section" hidden>
+        <h2 id="h-export">Exportar contactos</h2>
+        <div class="export">
+          <button class="btn" type="button" id="export-excel">Descargar Excel de participantes</button>
+          <span class="export__msg" id="export-msg" role="status"></span>
+        </div>
+        <p class="note">El Excel tiene dos hojas: «Todos los participantes» y «Aptos para marketing». Cada descarga queda registrada. El archivo contiene datos personales: guárdalo solo en equipos de Viteba y no lo envíes por canales no seguros. Los registros sin consentimiento comercial no pueden usarse para marketing.</p>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="js/staff.js"></script>
+</body>
+</html>
