@@ -11,7 +11,7 @@ npx wrangler d1 create reto-viteba --jurisdiction eu # datos alojados en la UE; 
 npm run db:remote                                    # crea las tablas
 npx wrangler secret put SESSION_SECRET               # cadena aleatoria larga (p. ej. `openssl rand -hex 32`)
 npx wrangler secret put HASH_PEPPER                  # otra cadena aleatoria larga
-npx wrangler secret put STAFF_PASSWORD               # clave de las azafatas (activa tablets y abre el panel)
+npx wrangler secret put STAFF_PASSWORD               # clave de el Staff de Viteba (activa tablets y abre el panel)
 npx wrangler secret put ADMIN_PASSWORD               # clave de marketing (además permite exportar)
 ```
 
@@ -46,7 +46,7 @@ npx wrangler d1 execute reto-viteba --remote --command "DELETE FROM participatio
 ## 4. Después del evento
 
 - Exporta el Excel desde el panel (perfil administrador).
-- Borra los contactos sin consentimiento comercial en el plazo comprometido en la información de privacidad (30 días en el borrador):
+- Borra los contactos sin consentimiento comercial en el plazo comprometido en la información de privacidad (30 días):
   `DELETE FROM participations WHERE marketing_consent = 0;`
 - Cambia o elimina las claves (`wrangler secret put …`) para desactivar tablets y panel.
 

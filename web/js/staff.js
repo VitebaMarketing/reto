@@ -44,7 +44,7 @@ async function request(path, { method = 'GET', body, raw = false } = {}) {
 function showPanel() {
   $('#login').hidden = true;
   $('#panel').hidden = false;
-  $('#role').textContent = role === 'admin' ? 'Administrador' : 'Azafata';
+  $('#role').textContent = role === 'admin' ? 'Administrador' : 'Staff';
   $('#export-section').hidden = role !== 'admin';
   refresh();
   clearInterval(refreshTimer);

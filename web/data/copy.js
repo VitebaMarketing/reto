@@ -1,5 +1,5 @@
 // Todos los textos que ve el participante. Editar aquí, no en el HTML.
-// Los textos legales (LEGAL) son un BORRADOR pendiente de revisión jurídica antes del evento.
+// Los textos legales (LEGAL) fueron aprobados por Viteba el 13/10/2026.
 
 export const COPY = {
   welcome: {
@@ -38,7 +38,7 @@ export const COPY = {
     phoneNotMobile: 'Tiene que ser un móvil: empieza por 6 o 7.',
     phoneBad: 'Revisa el número: parece que falta algo.',
     saveTitle: 'No hemos podido guardar tu registro',
-    saveText: 'Tu contacto todavía no está guardado. Avisa a la azafata o vuelve a intentarlo.',
+    saveText: 'Tu contacto todavía no está guardado. Avisa al Staff de Viteba o vuelve a intentarlo.',
     busyText: 'Espera unos segundos y vuelve a intentarlo.',
     retry: 'Reintentar',
     cancel: 'Cancelar',
@@ -62,11 +62,11 @@ export const COPY = {
     kicker: '¡Has completado el Reto Viteba!',
     title: '¡Enhorabuena!',
     claim: '¡Tu muestra de colágeno te espera!',
-    instruction: 'Muestra esta pantalla a nuestra azafata para recoger tu regalo.',
+    instruction: 'Muestra esta pantalla al Staff de Viteba para recoger tu regalo.',
     score: (n, total) => `Aciertos: ${n} de ${total}`,
     code: 'Participación',
     deliver: 'Entregar muestra y finalizar',
-    deliverHint: 'Azafata: mantén pulsado',
+    deliverHint: 'Staff de Viteba: mantén pulsado',
     delivering: 'Registrando entrega…',
     delivered: 'Muestra entregada',
     deliverErrorTitle: 'No se ha registrado la entrega',
@@ -89,12 +89,12 @@ export const COPY = {
   demoBadge: 'Demostración · no se guardan datos',
 };
 
-// ---------- Textos legales (BORRADOR: revisar con asesoría jurídica) ----------
+// ---------- Textos legales (aprobados por Viteba el 13/10/2026) ----------
 
 export const LEGAL = {
   // Cambiar la versión cada vez que se modifique cualquiera de estos textos: se guarda con cada registro.
-  privacyVersion: 'privacidad-oafi2026-v1-borrador',
-  consentVersion: 'consentimiento-oafi2026-v1-borrador',
+  privacyVersion: 'privacidad-oafi2026-v1',
+  consentVersion: 'consentimiento-oafi2026-v1',
 
   // El consentimiento nombra el canal concreto. Ajustar "SMS o WhatsApp" a los canales que se usen de verdad.
   consent: {

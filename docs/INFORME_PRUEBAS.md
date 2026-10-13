@@ -22,25 +22,25 @@ Cubren: salud del backend, acceso con clave correcta e incorrecta, bloqueo sin t
 | 8-9 | Respuestas verdadero / falso, doble pulsación ignorada | ✅ |
 | 10 | Tres aciertos | ✅ |
 | 11 | Cero aciertos → mismo premio | ✅ |
-| 12 | Pantalla de premio con código y carrusel | ✅ (con fotos de caja; faltan los sticks sueltos) |
+| 12 | Pantalla de premio con código y carrusel | ✅ |
 | 13 | Entrega: pulsación corta no entrega, mantenida sí | ✅ |
 | 14 | Reinicio de partida | ✅ |
 | 15 | Separación entre participantes: campo, casilla y código vacíos tras reiniciar | ✅ |
 | 16 | Pérdida de conexión (backend apagado): avisa de que NO está guardado | ✅ |
 | 17 | Recuperación: REINTENTAR con el backend de nuevo en marcha | ✅ |
 | 18 | Persistencia: los registros aparecen en el panel tras recargar | ✅ |
-| 19 | Acceso autorizado al panel (azafata y administrador) | ✅ |
+| 19 | Acceso autorizado al panel (Staff de Viteba y administrador) | ✅ |
 | 20 | Accesos no autorizados bloqueados (panel, exportación, tablet sin activar) | ✅ |
 | 21 | Sonido: el botón cambia de estado y de etiqueta | ✅ estado · ⚠️ no se ha podido **escuchar** el audio |
 | 22 | Movimiento reducido (menú del personal) | ✅ se activa · ⚠️ sin revisión visual detallada |
 | 23 | Tablet horizontal 1180 × 820: todas las pantallas | ✅ |
 | 24 | Tablet vertical 820 × 1180 | ✅ premio · ⚠️ resto solo revisado parcialmente |
 | 25 | Teclado: foco visible, Enter en los botones, foco al título de cada pantalla | ✅ básico · ⚠️ sin lector de pantalla |
-| 26 | Consola sin errores propios | ✅ (solo avisos provocados por las pruebas y 3 imágenes de sticks pendientes) |
+| 26 | Consola sin errores propios | ✅ (solo avisos provocados por las pruebas) |
 | 27 | Peso de carga | ✅ ≈ 0,9 MB en total, sin dependencias externas |
 | 28 | Publicación de la URL | ⛔ pendiente (falta acceso a GitHub y Cloudflare) |
 
-Además: sin avance automático tras responder (9 s esperando, sigue en la misma pregunta), aviso de inactividad y reinicio, exportación a Excel desde la bienvenida (clave de azafata rechazada, clave de administrador aceptada).
+Además: sin avance automático tras responder (9 s esperando, sigue en la misma pregunta), aviso de inactividad y reinicio, exportación a Excel desde la bienvenida (clave de Staff de Viteba rechazada, clave de administrador aceptada).
 
 ## No verificado — hay que hacerlo en la tablet real
 
@@ -51,8 +51,6 @@ Además: sin avance automático tras responder (9 s esperando, sigue en la misma
 - Sesión continua de varias horas.
 - Backend desplegado en Cloudflare (las mismas pruebas automáticas sirven contra la URL real).
 
-## Pendiente de terceros
+## Aprobaciones
 
-- Revisión jurídica de los textos de privacidad y consentimiento (borrador).
-- Revisión científica/regulatoria de las 14 preguntas.
-- Imágenes de los 3 sticks sueltos con fondo transparente.
+Viteba confirmó el 13/10/2026 la revisión científica de las preguntas y los textos legales.

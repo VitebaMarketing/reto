@@ -25,4 +25,4 @@ Archivo editable: `web/data/questions.js`. Cada partida elige 3 preguntas de tem
 - La pregunta 2 propuesta inicialmente («ayuda al cuerpo a formar colágeno…») se cambió a la redacción literal de la declaración autorizada («contribuye a la formación normal…»).
 - Las frases 5 y 12 son alegaciones de salud reguladas: no reescribirlas sin revisión.
 
-**Pendiente:** validación final por el equipo científico/regulatorio de Viteba (y, si procede, de OAFI) antes del evento. La columna «Base» resume el fundamento; no sustituye esa revisión.
+Revisión científica confirmada por Viteba el 13/10/2026.

@@ -411,7 +411,7 @@ input, select { user-select: text; -webkit-user-select: text; }
 /* Carrusel de premios: tres productos girando sobre el podio, siempre de cara al público. */
 .reward__stage { container-type: size; }
 .carousel {
-  position: absolute; left: 0; right: 0; bottom: 27%; height: 80%;
+  position: absolute; left: 0; right: 0; bottom: 27%; height: 70%;
   perspective: 150cqw; perspective-origin: 50% 30%;
 }
 .carousel__ring { position: absolute; inset: 0; transform-style: preserve-3d; }

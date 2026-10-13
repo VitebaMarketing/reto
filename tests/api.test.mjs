@@ -67,7 +67,7 @@ test('bloqueo: sin token o con token manipulado no se accede a nada', async () =
   assert.equal((await reg(forged, { contactType: 'email', contact: 'a@b.es' })).status, 401);
 });
 
-test('bloqueo por rol: la tablet no ve estadísticas, las azafatas no exportan', async () => {
+test('bloqueo por rol: la tablet no ve estadísticas, el Staff de Viteba no exportan', async () => {
   assert.equal((await call('/api/staff/stats', { token: kiosk.token })).status, 401);
   assert.equal((await call('/api/admin/export.csv', { token: staff.token })).status, 401);
   assert.equal((await reg(staff.token, { contactType: 'email', contact: 'a@b.es' })).status, 401);

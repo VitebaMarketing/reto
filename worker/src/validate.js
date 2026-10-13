@@ -41,7 +41,7 @@ export function cleanAnswers(answers) {
   }));
 }
 
-// El panel de azafatas solo ve contactos enmascarados: m•••@g•••.com / +34 ••• ••• 678
+// El panel del staff solo ve contactos enmascarados: m•••@g•••.com / +34 ••• ••• 678
 export function maskContact(type, contact) {
   if (!contact) return '—';
   if (type === 'email') {

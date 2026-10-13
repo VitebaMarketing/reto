@@ -8,7 +8,7 @@ Juego de verdadero o falso para la tablet del stand: el visitante deja un email 
 | `worker/` | El backend: API en Cloudflare Workers + base de datos D1. |
 | `tests/` | Pruebas automáticas de la API y del generador de Excel. |
 | `tools/` | Optimización de imágenes (`design/originales` → `web/assets/img`). |
-| `docs/` | Diseño, prompts de imágenes, informe de pruebas, manual de azafatas, despliegue. |
+| `docs/` | Diseño, prompts de imágenes, informe de pruebas, manual de Staff de Viteba, despliegue. |
 
 ## Probarlo en local
 
@@ -41,13 +41,13 @@ Pruebas (con la API en marcha): `node --test tests/api.test.mjs tests/xlsx.test.
 
 ## Arquitectura en una frase
 
-Frontend estático → llama a una API pequeña → la API valida todo y escribe en la base de datos. El navegador nunca puede leer contactos: la tablet solo puede **crear** participaciones (con un token que se obtiene con la clave del personal), las azafatas ven estadísticas y contactos **enmascarados**, y solo el perfil administrador exporta.
+Frontend estático → llama a una API pequeña → la API valida todo y escribe en la base de datos. El navegador nunca puede leer contactos: la tablet solo puede **crear** participaciones (con un token que se obtiene con la clave del personal), el Staff de Viteba ven estadísticas y contactos **enmascarados**, y solo el perfil administrador exporta.
 
 Publicación y puesta en producción: ver [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md).
 
 ## Antes de usarlo con datos reales
 
-1. Revisión jurídica de los textos de `LEGAL` en `web/data/copy.js` (están marcados como borrador).
-2. Revisión de las preguntas por parte del equipo científico/regulatorio.
-3. Backend desplegado con claves propias (nunca las de prueba) y `ALLOWED_ORIGINS` con la URL pública.
-4. Prueba completa en la tablet real del evento.
+1. Backend desplegado con claves propias (nunca las de prueba) y `ALLOWED_ORIGINS` con la URL pública.
+2. Prueba completa en la tablet real del evento.
+
+Textos legales y preguntas: aprobados por Viteba el 13/10/2026.
