@@ -6,7 +6,7 @@ export const CONFIG = {
   event: 'OAFI 2026',
 
   // URL del backend (Cloudflare Worker). Vacío = la web pública funciona solo en modo DEMO.
-  apiBase: isLocal ? 'http://localhost:8787' : '',
+  apiBase: isLocal ? 'http://localhost:8787' : 'https://reto-viteba-api.reto-viteba-api.workers.dev',
 
   // Modo demostración: no guarda nada y lo indica en pantalla. Se fuerza con ?demo=1.
   demo: new URLSearchParams(location.search).has('demo'),
