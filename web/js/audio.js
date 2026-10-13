@@ -36,6 +36,10 @@ export function createSound() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return false;
     if (!ctx) {
+      // iPhone/iPad: sin esto, el interruptor lateral de silencio enmudece todo el audio de la web.
+      try {
+        if (navigator.audioSession) navigator.audioSession.type = 'playback';
+      } catch { /* navegador sin esta opción */ }
       ctx = new AudioCtx();
       master = ctx.createGain();
       master.gain.value = 0.9;
@@ -47,7 +51,7 @@ export function createSound() {
       filter.frequency.value = 1400;
       musicBus.connect(filter).connect(master);
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
     return true;
   }
 
