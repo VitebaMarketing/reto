@@ -5,8 +5,8 @@ compatibility_date = "2026-09-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "reto-viteba"
-# Sustituir por el id que devuelve `wrangler d1 create reto-viteba --jurisdiction eu`
-database_id = "00000000-0000-0000-0000-000000000000"
+# Base de datos de producción (cuenta de Viteba, jurisdicción UE)
+database_id = "163f4050-3672-42d3-afed-4d2b37b9ad93"
 
 [vars]
 EVENT_NAME = "OAFI 2026"
