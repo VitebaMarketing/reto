@@ -31,5 +31,5 @@ export const CONFIG = {
   requestTimeoutMs: 8000,
 
   source: 'tablet-stand',
-  version: '1.0.0',
+  version: '1.1.0',
 };

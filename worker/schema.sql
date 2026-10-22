@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS participations (
   code              TEXT NOT NULL,               -- identificador corto no sensible que ve la azafata (V-4K7QX)
   event             TEXT NOT NULL,               -- "OAFI 2026"
   created_at        TEXT NOT NULL,               -- ISO 8601 UTC
+  first_name        TEXT,                        -- nombre sin apellidos
   contact_type      TEXT NOT NULL CHECK (contact_type IN ('email', 'phone', 'anonymous')),
   contact           TEXT,                        -- email en minúsculas o móvil E.164; NULL si es anónima
   contact_hash      TEXT,                        -- SHA-256 con pepper, solo para detectar duplicados

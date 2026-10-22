@@ -23,7 +23,7 @@ const screens = Object.fromEntries($$('.screen').map((el) => [el.dataset.screen,
 const steps = Object.fromEntries($$('.step').map((el) => [el.dataset.step, el]));
 const el = {
   progress: $('#progress'), progressLabel: $('#progress-label'), progressBar: $('#progress-bar'),
-  form: $('#reg-form'), input: $('#contact-input'), label: $('#contact-label'), prefix: $('#prefix'),
+  name: $('#name-input'), nameError: $('#name-error'), form: $('#reg-form'), input: $('#contact-input'), label: $('#contact-label'), prefix: $('#prefix'),
   chips: $('#domain-chips'), fieldError: $('#field-error'), consent: $('#consent'), consentText: $('#consent-text'),
   saveErrorText: $('#save-error-text'),
   countdown: $('#countdown'), countdownNumber: $('#countdown-number'),
@@ -36,7 +36,6 @@ const el = {
   idleDialog: $('#idle-dialog'), idleSeconds: $('#idle-seconds'),
   privacyDialog: $('#privacy-dialog'), deliverErrorDialog: $('#deliver-error-dialog'),
   staffDialog: $('#staff-dialog'), staffStatus: $('#staff-status'),
-  activateDialog: $('#activate-dialog'), activateForm: $('#activate-form'),
 };
 
 // Estado en memoria. Nada del participante se escribe en el almacenamiento del navegador.
@@ -177,6 +176,10 @@ async function start() {
 function resetForm() {
   el.form.reset();
   el.input.value = '';
+  el.name.value = '';
+  el.nameError.textContent = '';
+  el.name.removeAttribute('aria-invalid');
+  $('#other-contact').open = false;
   el.prefix.value = '+34';
   el.consent.checked = false;
   showFieldError('');
@@ -194,11 +197,15 @@ function showFieldError(message) {
 }
 
 function choose(type) {
-  if (busy || step !== 'choose') return;
+  if (busy || !['choose', 'form'].includes(step)) return;
   sound.tap();
   contactType = type;
   const isEmail = type === 'email';
+  const firstName = el.name.value;
   resetForm();
+  el.name.value = firstName;
+  $('#switch-contact').dataset.type = isEmail ? 'phone' : 'email';
+  $('#switch-contact').textContent = isEmail ? 'Prefiero usar mi teléfono móvil' : 'Volver al correo electrónico';
   el.label.textContent = isEmail ? COPY.register.emailLabel : COPY.register.phoneLabel;
   el.input.type = isEmail ? 'email' : 'tel';
   el.input.inputMode = isEmail ? 'email' : 'tel';
@@ -224,6 +231,15 @@ function newId() {
 
 function submitForm() {
   if (busy || step !== 'form') return;
+  const firstName = el.name.value.trim().replace(/\s+/g, ' ');
+  if (!firstName || !/^[\p{L}\p{M}][\p{L}\p{M} ’'·-]{0,39}$/u.test(firstName)) {
+    el.nameError.textContent = 'Escribe tu nombre, sin apellidos.';
+    el.name.setAttribute('aria-invalid', 'true');
+    el.name.focus();
+    return;
+  }
+  el.nameError.textContent = '';
+  el.name.removeAttribute('aria-invalid');
   const result = contactType === 'email'
     ? checkEmail(el.input.value, COPY.errors)
     : checkPhone(el.input.value, el.prefix.value, COPY.errors);
@@ -238,6 +254,7 @@ function submitForm() {
   const consent = el.consent.checked;
   pendingRegistration = {
     id: newId(),
+    firstName,
     contactType,
     contact: result.value,
     marketingConsent: consent,
@@ -273,7 +290,7 @@ async function sendRegistration() {
       showFieldError(payload.contactType === 'email' ? COPY.errors.emailBad : COPY.errors.phoneBad);
       return;
     }
-    if (err.kind === 'unauthorized') requireActivation();
+    // Un error de sesión pública se puede reintentar sin pedir la clave del personal.
     el.saveErrorText.textContent = err.kind === 'busy' ? COPY.errors.busyText : COPY.errors.saveText;
     await setStep('error');
     $('#save-error-title').focus({ preventScroll: true });
@@ -282,7 +299,7 @@ async function sendRegistration() {
   if (run !== runId) return;
 
   const questions = pickQuestions(QUESTIONS, CONFIG.questionsPerGame);
-  session = { id: result.id, code: result.code, questions, index: 0, answers: [], score: 0, locked: false };
+  session = { id: result.id, code: result.code, firstName: payload.firstName || '', questions, index: 0, answers: [], score: 0, locked: false };
   const consented = payload.marketingConsent;
   pendingRegistration = null;
   resetForm(); // el contacto ya está en el servidor: se borra de la pantalla y de la memoria
@@ -355,12 +372,43 @@ function renderProgress() {
 // Ajusta la letra al espacio disponible: las frases cortas crecen (hasta 1,5×) y las largas
 // encogen lo justo para que nunca haya que desplazarse.
 function fitQuestion() {
+  if (screen !== 'game' || !session) return;
+  const body = $('.question__body', el.question);
+  el.question.classList.remove('needs-scroll');
   let fit = 1.5;
   el.question.style.setProperty('--fit', fit);
-  while (fit > 0.6 && el.question.scrollHeight > el.question.clientHeight + 1) {
-    fit -= 0.05;
+  const available = () => {
+    const style = getComputedStyle(el.question);
+    let height = el.question.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    if (style.flexDirection.startsWith('column') && !el.qImg.hidden) {
+      height -= el.qImg.getBoundingClientRect().height + parseFloat(style.rowGap);
+    }
+    return height;
+  };
+  while (fit > 0.8 && (body.scrollHeight > available() + 1 || body.scrollWidth > body.clientWidth + 1)) {
+    fit = Math.max(0.8, fit - 0.025);
     el.question.style.setProperty('--fit', fit);
   }
+  // En móviles pequeños o con A+, conservar un tamaño legible y permitir leer todo.
+  if (body.scrollHeight > available() + 1) el.question.classList.add('needs-scroll');
+}
+
+let questionTick = null;
+function stopQuestionTick() {
+  clearInterval(questionTick);
+  questionTick = null;
+}
+function startQuestionTick() {
+  stopQuestionTick();
+  const end = performance.now() + CONFIG.timerSeconds * 1000;
+  let previous = -1;
+  questionTick = setInterval(() => {
+    if (!session || session.locked || screen !== 'game') return stopQuestionTick();
+    const remaining = Math.ceil((end - performance.now()) / 1000);
+    if (remaining <= 0) return stopQuestionTick();
+    if (remaining <= 5 && remaining !== previous && !document.hidden && !el.idleDialog.open) sound.clock(remaining);
+    previous = remaining;
+  }, 100);
 }
 
 function renderQuestion(index) {
@@ -371,7 +419,8 @@ function renderQuestion(index) {
   el.qText.textContent = q.text;
   el.qImg.hidden = !q.image;
   if (q.image) el.qImg.src = `assets/img/${q.image}.webp`;
-  el.question.classList.remove('is-answered');
+  stopQuestionTick();
+  el.question.classList.remove('is-answered', 'needs-scroll');
   el.feedback.hidden = true;
   el.answers.hidden = false;
   el.answers.classList.remove('is-locked');
@@ -397,12 +446,14 @@ function enterQuestion() {
   el.timer.style.setProperty('--timer-s', `${CONFIG.timerSeconds}s`);
   void el.timer.getBoundingClientRect();
   el.timer.classList.add('is-running'); // decorativo: al llenarse no ocurre nada
+  startQuestionTick();
   el.qText.focus({ preventScroll: true });
   announce(`${COPY.game.progress(session.index + 1, session.questions.length)}. ${el.qText.textContent}`);
 }
 
 async function answer(value, button) {
   if (!session || screen !== 'game' || session.locked || busy) return;
+  stopQuestionTick();
   session.locked = true; // bloquea dobles pulsaciones
   const run = runId;
   const q = session.questions[session.index];
@@ -439,6 +490,7 @@ async function answer(value, button) {
   el.nextLabel.textContent = last ? COPY.game.finish : COPY.game.next;
   el.next.style.setProperty('--feedback-ms', `${CONFIG.feedbackMs}ms`);
   el.next.hidden = false;
+  fitQuestion();
   const auto = CONFIG.feedbackMs > 0;
   el.next.classList.remove('is-entering', 'is-counting', 'is-waiting');
   void el.next.offsetWidth;
@@ -472,7 +524,7 @@ async function finish() {
   queue.run(() => api.progress(id, { status: 'completed', score, answers }));
   track('game_complete', { score });
   el.rewardScore.textContent = COPY.reward.score(score, questions.length);
-  el.rewardCode.textContent = code;
+  el.rewardCode.textContent = session.firstName || 'Invitado';
   el.deliver.disabled = false;
   el.deliverLabel.textContent = COPY.reward.deliver;
   await go('reward', { force: true });
@@ -519,6 +571,7 @@ async function showToast(text, ms) {
 
 // Deja la tablet como recién encendida: ni un dato del participante anterior en pantalla o memoria.
 async function reset() {
+  stopQuestionTick();
   runId++;
   for (const timer of timers) clearTimeout(timer);
   timers.clear();
@@ -589,31 +642,7 @@ for (const type of ['pointerdown', 'keydown', 'input']) {
 
 // ---------- activación de la tablet y menú del personal ----------
 
-function requireActivation() {
-  api.deactivate();
-  if (!el.activateDialog.open) el.activateDialog.showModal();
-}
-
-el.activateDialog.addEventListener('cancel', (e) => e.preventDefault());
-el.activateForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const password = $('#activate-password');
-  const error = $('#activate-error');
-  error.textContent = '';
-  try {
-    await api.activate(password.value, $('#activate-device').value);
-    el.activateDialog.close();
-  } catch (err) {
-    error.textContent = err.kind === 'unauthorized' ? 'Clave incorrecta.'
-      : err.kind === 'busy' ? 'Demasiados intentos. Espera unos minutos.'
-      : 'No hay conexión con el servidor.';
-  } finally {
-    password.value = '';
-  }
-});
-
 async function openStaffMenu() {
-  if (el.activateDialog.open) return;
   el.staffStatus.textContent = 'Comprobando conexión…';
   $('#staff-motion').setAttribute('aria-pressed', String(document.documentElement.classList.contains('reduce-motion')));
   el.staffDialog.showModal();
@@ -694,11 +723,7 @@ const staffActions = {
     $('#staff-motion').setAttribute('aria-pressed', String(on));
     try { localStorage.setItem('rv-reduce-motion', on ? '1' : '0'); } catch { /* preferencia no persistida */ }
   },
-  'staff-deactivate': () => {
-    if (!window.confirm('¿Desactivar esta tablet? Habrá que volver a introducir la clave.')) return;
-    reset();
-    requireActivation();
-  },
+
 };
 
 // ---------- controles globales ----------
@@ -733,10 +758,11 @@ $('#text-toggle').addEventListener('click', () => {
 const actions = {
   start,
   choose: (target) => choose(target.dataset.type),
+  'switch-contact': (target) => choose(target.dataset.type),
   anonymous: playAnonymous,
   back: () => { if (!busy && step === 'form') { resetForm(); setStep('choose'); } },
   privacy: () => el.privacyDialog.showModal(),
-  export: () => { if (screen === 'welcome' && !el.activateDialog.open) exportDialog.showModal(); },
+  export: () => { if (screen === 'welcome') exportDialog.showModal(); },
   'retry-register': () => { if (pendingRegistration && step === 'error') sendRegistration(); },
   'cancel-register': () => reset(),
   begin,
@@ -781,6 +807,9 @@ window.addEventListener('beforeunload', (e) => {
 // Sin zoom por pellizco ni menús contextuales: la tablet se comporta como un quiosco.
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 document.addEventListener('contextmenu', (e) => { if (!e.target.closest('input')) e.preventDefault(); });
+el.qImg.addEventListener('load', () => { if (screen === 'game') fitQuestion(); });
+document.fonts.ready.then(() => { if (screen === 'game') fitQuestion(); });
+window.visualViewport?.addEventListener('resize', () => { if (screen === 'game') fitQuestion(); });
 window.addEventListener('resize', () => { if (screen === 'game' && session) fitQuestion(); });
 
 // ---------- arranque ----------
@@ -793,7 +822,7 @@ function init() {
   applyCopy();
   syncToggles();
   enter(screens.welcome);
-  if (!api.isActivated()) el.activateDialog.showModal();
+  // El juego es público: tanto la tablet como los visitantes por QR pueden participar.
   // Precarga de las imágenes del juego para que ninguna pantalla aparezca a medias.
   for (const name of ['forma', 'vf-iconos', 'vitamina-c', 'movimiento', 'podio']) {
     new Image().src = `assets/img/${name}.webp`;

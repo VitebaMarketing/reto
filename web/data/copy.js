@@ -12,7 +12,7 @@ export const COPY = {
   },
   register: {
     title: '¿Dónde podemos contactar contigo?',
-    subtitle: 'Elige la opción que te resulte más cómoda.',
+    subtitle: 'Participa con tu correo electrónico y llévate tu muestra.',
     email: 'Correo electrónico',
     phone: 'Teléfono móvil',
     anonymous: 'Prefiero jugar sin dejar mis datos',
@@ -25,7 +25,7 @@ export const COPY = {
     submit: 'Continuar',
     saving: 'Guardando…',
     ok: '¡Perfecto! Vamos a jugar.',
-    privacyNote: 'Responsable: WTG Doribac S.L.U. (Viteba). Usamos tu contacto para gestionar tu participación y la entrega de la muestra.',
+    privacyNote: 'Responsable: WTG Doribac S.L.U. (Viteba). Usamos tu nombre y contacto para gestionar tu participación y la entrega de la muestra.',
     privacyMore: 'Más información',
   },
   errors: {
@@ -64,7 +64,7 @@ export const COPY = {
     claim: '¡Tu muestra de colágeno te espera!',
     instruction: 'Muestra esta pantalla al Staff de Viteba para recoger tu regalo.',
     score: (n, total) => `Aciertos: ${n} de ${total}`,
-    code: 'Participación',
+    code: 'Participación:',
     deliver: 'Entregar muestra y finalizar',
     deliverHint: 'Staff de Viteba: mantén pulsado',
     delivering: 'Registrando entrega…',
@@ -93,7 +93,7 @@ export const COPY = {
 
 export const LEGAL = {
   // Cambiar la versión cada vez que se modifique cualquiera de estos textos: se guarda con cada registro.
-  privacyVersion: 'privacidad-oafi2026-v1',
+  privacyVersion: 'privacidad-oafi2026-v2',
   consentVersion: 'consentimiento-oafi2026-v1',
 
   // El consentimiento nombra el canal concreto. Ajustar "SMS o WhatsApp" a los canales que se usen de verdad.
@@ -106,10 +106,10 @@ export const LEGAL = {
   privacyClose: 'Cerrar',
   privacy: [
     ['Responsable', 'WTG Doribac S.L.U. (Viteba) · CIF B66284308 · C/ Tarragona 151, Pl. 8, Of. 2, 08014 Barcelona · info@viteba.com'],
-    ['Para qué usamos tu contacto', 'Para gestionar tu participación en El Reto Viteba y la entrega de tu muestra. Solo si marcas la casilla, también para enviarte consejos, novedades y promociones de Viteba.'],
+    ['Para qué usamos tu nombre y contacto', 'Para gestionar tu participación en El Reto Viteba y la entrega de tu muestra. Solo si marcas la casilla, también para enviarte consejos, novedades y promociones de Viteba.'],
     ['Base jurídica', 'Tu participación voluntaria en la actividad. Para las comunicaciones comerciales, tu consentimiento, que puedes retirar cuando quieras.'],
     ['La casilla es opcional', 'Recibirás tu muestra igualmente, marques o no la casilla.'],
-    ['Cuánto tiempo', 'Si no aceptas comunicaciones, borraremos tu contacto en un máximo de 30 días tras el evento. Si las aceptas, lo conservaremos hasta que te des de baja.'],
+    ['Cuánto tiempo', 'Si no aceptas comunicaciones, borraremos tu nombre y contacto en un máximo de 30 días tras el evento. Si las aceptas, los conservaremos hasta que te des de baja.'],
     ['Quién accede', 'Viteba y sus proveedores tecnológicos, que actúan como encargados del tratamiento. No cedemos tus datos a terceros.'],
     ['Tus derechos', 'Puedes acceder, rectificar, suprimir, oponerte, limitar el tratamiento y solicitar la portabilidad escribiendo a info@viteba.com. También puedes reclamar ante la Agencia Española de Protección de Datos (www.aepd.es).'],
     ['Más detalle', 'Política de privacidad completa en viteba.com/pages/politica-de-privacidad'],

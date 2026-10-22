@@ -15,8 +15,9 @@ export class ApiError extends Error {
 
 function createRealApi(config) {
   let token = null;
+  let publicId = null;
   try {
-    token = localStorage.getItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY); // no reutilizar credenciales del personal para el acceso público
   } catch {
     token = null;
   }
@@ -57,7 +58,7 @@ function createRealApi(config) {
 
   return {
     demo: false,
-    isActivated: () => Boolean(token),
+    isActivated: () => true,
     deactivate() {
       token = null;
       try { localStorage.removeItem(TOKEN_KEY); } catch { /* nada que borrar */ }
@@ -68,10 +69,17 @@ function createRealApi(config) {
       try { localStorage.setItem(TOKEN_KEY, token); } catch { /* se pedirá de nuevo al recargar */ }
     },
     health: () => request('/api/health', { auth: false }),
-    register: (payload) => request('/api/participations', { method: 'POST', body: payload }),
+    async register(payload) {
+      if (publicId !== payload.id || !token) {
+        const session = await request('/api/play/session', { method: 'POST', auth: false, body: { id: payload.id } });
+        token = session.token;
+        publicId = payload.id;
+      }
+      return request('/api/participations', { method: 'POST', body: payload });
+    },
     progress: (id, payload) => request(`/api/participations/${id}/progress`, { method: 'POST', body: payload }),
     deliver: (id, payload) => request(`/api/participations/${id}/deliver`, { method: 'POST', body: payload }),
-    track: (type, meta, participationId) => request('/api/events', { method: 'POST', body: { type, meta, participationId } }),
+    track: (type, meta, participationId) => token ? request('/api/events', { method: 'POST', body: { type, meta, participationId } }) : Promise.resolve({ ok: true }),
   };
 }
 

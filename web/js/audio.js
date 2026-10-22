@@ -116,6 +116,10 @@ export function createSound() {
       if (!unlock()) return;
       tone(note(7), { dur: 0.09, gain: 0.07, type: 'triangle' });
     },
+    clock(remaining) {
+      if (!enabled || !ctx || ctx.state !== 'running') return;
+      tone(remaining % 2 ? 650 : 520, { dur: 0.045, gain: 0.018, type: 'sine', attack: 0.004 });
+    },
     correct() {
       if (!unlock()) return;
       tone(note(3), { dur: 0.35, gain: 0.11, type: 'triangle' });

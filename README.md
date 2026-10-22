@@ -1,6 +1,6 @@
 # El Reto Viteba · OAFI 2026
 
-Juego de verdadero o falso para la tablet del stand: el visitante deja un email o un móvil, responde 3 preguntas sobre colágeno y recoge su muestra. Incluye backend real para guardar contactos y consentimientos, panel del personal y exportación a Excel.
+Juego de verdadero o falso para la tablet del stand: el visitante deja su nombre y email (móvil en «Otros…»), responde 3 preguntas sobre colágeno y recoge su muestra. Incluye backend real para guardar contactos y consentimientos, panel del personal y exportación a Excel.
 
 | Carpeta | Qué contiene |
 |---|---|
@@ -24,7 +24,7 @@ npm run dev             # API en http://localhost:8787
 python3 -m http.server 5173 --directory web     # juego en http://localhost:5173
 ```
 
-- `http://localhost:5173/` → juego real. La primera vez pide la clave del personal para activar la tablet.
+- `http://localhost:5173/` → juego real. Acceso público, también desde un QR; no pide clave del personal.
 - `http://localhost:5173/?demo=1` → modo demostración: no guarda nada y lo indica en pantalla.
 - `http://localhost:5173/staff.html` → panel del personal.
 
@@ -41,7 +41,7 @@ Pruebas (con la API en marcha): `node --test tests/api.test.mjs tests/xlsx.test.
 
 ## Arquitectura en una frase
 
-Frontend estático → llama a una API pequeña → la API valida todo y escribe en la base de datos. El navegador nunca puede leer contactos: la tablet solo puede **crear** participaciones (con un token que se obtiene con la clave del personal), el Staff de Viteba ven estadísticas y contactos **enmascarados**, y solo el perfil administrador exporta.
+Frontend estático → llama a una API pequeña → la API valida todo y escribe en la base de datos. El navegador nunca puede leer contactos: cada visitante recibe una sesión temporal que solo permite registrar y actualizar su propia participación, el Staff de Viteba ven estadísticas y contactos **enmascarados**, y solo el perfil administrador exporta.
 
 Publicación y puesta en producción: ver [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md).
 

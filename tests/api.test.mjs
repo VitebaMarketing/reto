@@ -208,3 +208,48 @@ test('exportación en JSON para Excel: solo admin, con columnas y filas', async 
   assert.ok(r.data.columns.includes('contact') && r.data.rows.length > 0);
   assert.equal((await call('/api/admin/export.csv?scope=all&format=json', { token: staff.token })).status, 401);
 });
+
+test('QR público: registro con nombre, reintento y partida propia sin clave del personal', async () => {
+  const id = randomUUID();
+  const session = await call('/api/play/session', { method: 'POST', body: { id } });
+  assert.equal(session.status, 200);
+  const token = session.data.token;
+  const payload = { id, firstName: 'María José', contactType: 'email', contact: `qr.${unique()}@example.com`, privacyVersion: 'test-v2' };
+  const created = await call('/api/participations', { method: 'POST', token, body: payload });
+  assert.equal(created.status, 200);
+  const retry = await call('/api/participations', { method: 'POST', token, body: payload });
+  assert.equal(retry.data.code, created.data.code);
+  assert.equal((await call('/api/play/session', { method: 'POST', body: { id } })).status, 409);
+  for (const path of ['/api/staff/stats', '/api/staff/deliveries', '/api/admin/export.csv']) {
+    assert.equal((await call(path, { token })).status, 401);
+  }
+  assert.equal((await call(`/api/participations/${randomUUID()}/progress`, { method: 'POST', token, body: { status: 'playing' } })).status, 403);
+  assert.equal((await call(`/api/participations/${randomUUID()}/deliver`, { method: 'POST', token, body: {} })).status, 403);
+  assert.equal((await call('/api/participations', { method: 'POST', token, body: { ...payload, id: randomUUID() } })).status, 403);
+  assert.equal((await call('/api/events', { method: 'POST', token, body: { type: 'answer', participationId: randomUUID() } })).status, 403);
+  assert.equal((await call(`/api/participations/${id}/progress`, { method: 'POST', token, body: { status: 'completed', score: 3, answers: [] } })).status, 200);
+  assert.equal((await call(`/api/participations/${id}/deliver`, { method: 'POST', token, body: { score: 3, answers: [] } })).status, 200);
+  const exported = await call('/api/admin/export.csv?format=json', { token: admin.token });
+  assert.equal(exported.data.rows.find(r => r.code === created.data.code).first_name, 'María José');
+});
+
+test('QR público: valida el nombre y limita registros por origen de red', async () => {
+  const first = randomUUID();
+  const session = await call('/api/play/session', { method: 'POST', body: { id: first } });
+  const invalid = await call('/api/participations', { method: 'POST', token: session.data.token, body: {
+    id: first, firstName: '<script>', contactType: 'email', contact: 'test@example.com', privacyVersion: 'test'
+  }});
+  assert.equal(invalid.status, 422);
+  assert.equal((await call('/api/play/session', { method: 'POST', body: { id: 'not-uuid' } })).status, 400);
+  let limited = false;
+  for (let i = 0; i < 41; i++) {
+    const id = randomUUID();
+    const s = await call('/api/play/session', { method: 'POST', body: { id } });
+    const r = await call('/api/participations', { method: 'POST', token: s.data.token, body: {
+      id, firstName: 'Ana', contactType: 'email', contact: `limit.${unique()}@example.com`, privacyVersion: 'test'
+    }});
+    if (r.status === 429) { limited = true; break; }
+    assert.equal(r.status, 200);
+  }
+  assert.ok(limited, 'se limita el abuso del registro público');
+});
