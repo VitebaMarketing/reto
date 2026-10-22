@@ -51,3 +51,11 @@ Publicación y puesta en producción: ver [docs/DESPLIEGUE.md](docs/DESPLIEGUE.m
 2. Prueba completa en la tablet real del evento.
 
 Textos legales y preguntas: aprobados por Viteba el 13/10/2026.
+
+## Rotación de preguntas
+
+El banco contiene 14 preguntas y cada partida muestra 3. El sorteo evita las preguntas de las dos partidas anteriores: tres partidas consecutivas en la misma tablet tienen nueve preguntas distintas. Entre las combinaciones disponibles se priorizan respuestas verdaderas y falsas, temas distintos y las preguntas menos usadas; los empates y el orden se sortean. Si se reduce el banco y no hay suficientes preguntas nuevas, se elige la combinación con menos repeticiones posible.
+
+El historial se guarda en el navegador de cada dispositivo y persiste tras recargar. No se comparte entre móviles distintos que accedan por QR. Solo contiene identificadores de preguntas y contadores, sin datos personales. Si el almacenamiento está bloqueado, se conserva en memoria hasta cerrar o recargar.
+
+Pruebas de esta lógica: `node --test tests/game.test.mjs`.
