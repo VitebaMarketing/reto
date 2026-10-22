@@ -51,17 +51,19 @@ async function route(request, env) {
 
   if (method === 'GET' && path === '/api/health') return health(env);
   if (method === 'POST' && path === '/api/auth/login') return login(request, env);
+  if (method === 'POST' && path === '/api/play/session') return publicSession(request, env);
 
   if (method === 'POST' && path === '/api/participations') {
-    return createParticipation(request, env, await requireRole(request, env, ['kiosk']));
+    return createParticipation(request, env, await requireRole(request, env, ['kiosk', 'participant']));
   }
   const m = path.match(/^\/api\/participations\/([0-9a-f-]{36})\/(progress|deliver)$/);
   if (method === 'POST' && m) {
-    const auth = await requireRole(request, env, ['kiosk']);
+    const auth = await requireRole(request, env, ['kiosk', 'participant']);
+    if (auth.role === 'participant' && auth.pid !== m[1]) throw new HttpError(403, 'not_your_participation');
     return m[2] === 'progress' ? progress(request, env, auth, m[1]) : deliver(request, env, auth, m[1]);
   }
   if (method === 'POST' && path === '/api/events') {
-    return trackEvent(request, env, await requireRole(request, env, ['kiosk']));
+    return trackEvent(request, env, await requireRole(request, env, ['kiosk', 'participant']));
   }
 
   if (method === 'GET' && path === '/api/staff/stats') {
@@ -157,6 +159,20 @@ async function health(env) {
   return json({ ok, db, configured: configured(env), event: eventName(env), time: now() }, ok ? 200 : 503);
 }
 
+async function publicSession(request, env) {
+  if (!configured(env)) throw new HttpError(503, 'not_configured');
+  const body = await readJson(request);
+  if (!isUuid(body.id)) throw new HttpError(400, 'bad_id');
+  const existing = await env.DB.prepare('SELECT id FROM participations WHERE id = ?').bind(body.id).first();
+  if (existing) throw new HttpError(409, 'session_already_registered');
+  // Una credencial distinta por participación: no da acceso al panel ni a otras partidas.
+  const ip = request.headers.get('CF-Connecting-IP') || 'local';
+  const device = `public-${(await sha256Hex(`${env.HASH_PEPPER}:${ip}`)).slice(0, 24)}`;
+  const exp = Math.floor(Date.now() / 1000) + 2 * 3600;
+  const token = await signToken({ role: 'participant', pid: body.id, device, exp }, env.SESSION_SECRET);
+  return json({ ok: true, token, exp });
+}
+
 async function login(request, env) {
   if (!configured(env)) throw new HttpError(503, 'not_configured');
   const ip = request.headers.get('CF-Connecting-IP') || 'local';
@@ -188,6 +204,9 @@ async function login(request, env) {
 async function createParticipation(request, env, auth) {
   const body = await readJson(request);
   if (!isUuid(body.id)) throw new HttpError(400, 'bad_id');
+  if (auth.role === 'participant' && auth.pid !== body.id) throw new HttpError(403, 'not_your_participation');
+  const firstName = typeof body.firstName === 'string' ? body.firstName.trim().replace(/\s+/g, ' ') : '';
+  if (firstName && !/^[\p{L}\p{M}][\p{L}\p{M} ’'·-]{0,39}$/u.test(firstName)) throw new HttpError(422, 'bad_name');
 
   const allowAnonymous = env.ALLOW_ANONYMOUS === 'true';
   const parsed = normalizeContact(body.contactType, body.contact);
@@ -231,11 +250,11 @@ async function createParticipation(request, env, auth) {
     try {
       await env.DB.prepare(
         `INSERT INTO participations
-          (id, code, event, created_at, contact_type, contact, contact_hash, marketing_consent,
+          (id, code, event, created_at, first_name, contact_type, contact, contact_hash, marketing_consent,
            consent_version, consent_text, consent_at, privacy_version, status, is_duplicate, source, device)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'registered', ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'registered', ?, ?, ?)`
       ).bind(
-        body.id, code, event, at, parsed.type, parsed.contact, hash, consent ? 1 : 0,
+        body.id, code, event, at, firstName || null, parsed.type, parsed.contact, hash, consent ? 1 : 0,
         consent ? consentVersion : null, consent ? consentText : null, consent ? at : null,
         privacyVersion || null, duplicate, String(body.source || 'tablet-stand').slice(0, 40), auth.device
       ).run();
@@ -313,6 +332,7 @@ async function trackEvent(request, env, auth) {
     if (meta.length > 300 || /@|\+?\d{7,}/.test(meta)) meta = null;
   }
   const pid = isUuid(body.participationId) ? body.participationId : null;
+  if (auth.role === 'participant' && pid && auth.pid !== pid) throw new HttpError(403, 'not_your_participation');
   await env.DB.prepare('INSERT INTO events (at, event, type, device, participation_id, meta) VALUES (?, ?, ?, ?, ?, ?)')
     .bind(now(), eventName(env), body.type, auth.device, pid, meta).run();
   return json({ ok: true });
@@ -423,7 +443,7 @@ async function exportCsv(env, auth, scopeParam, format) {
     : `SELECT * FROM participations WHERE event = ? AND contact_type != 'anonymous' ORDER BY created_at`;
   const rows = await env.DB.prepare(sql).bind(event).all();
 
-  const cols = ['code', 'event', 'created_at', 'contact_type', 'contact', 'marketing_consent', 'consent_version',
+  const cols = ['code', 'first_name', 'event', 'created_at', 'contact_type', 'contact', 'marketing_consent', 'consent_version',
     'consent_text', 'consent_at', 'privacy_version', 'status', 'score', 'delivered_at', 'is_duplicate', 'source', 'device'];
   await env.DB.prepare('INSERT INTO audit (at, role, action, detail) VALUES (?, ?, ?, ?)')
     .bind(now(), auth.role, 'export', `${scope}:${rows.results.length}`).run();

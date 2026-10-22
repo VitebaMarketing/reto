@@ -4,7 +4,7 @@
 import { buildWorkbook } from './xlsx.js';
 
 const HEADERS = {
-  code: 'Código', event: 'Evento', created_at: 'Fecha y hora (UTC)', contact_type: 'Tipo de contacto',
+  first_name: 'Nombre', code: 'Código', event: 'Evento', created_at: 'Fecha y hora (UTC)', contact_type: 'Tipo de contacto',
   contact: 'Contacto', marketing_consent: 'Acepta comunicaciones comerciales', consent_version: 'Versión del consentimiento',
   consent_text: 'Texto aceptado', consent_at: 'Fecha del consentimiento (UTC)', privacy_version: 'Versión de privacidad',
   status: 'Estado del juego', score: 'Aciertos', delivered_at: 'Muestra entregada (UTC)', is_duplicate: 'Contacto repetido',

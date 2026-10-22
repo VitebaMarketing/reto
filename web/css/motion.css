@@ -162,3 +162,11 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 html.reduce-motion .next.is-counting .next__fill { animation-duration: var(--feedback-ms, 6000ms) !important; }
 html.reduce-motion .timer.is-running .timer__ring { animation-duration: var(--timer-s, 15s) !important; }
 html.reduce-motion .hold.is-holding .hold__fill { transition-duration: var(--hold-ms, 1200ms) !important; }
+
+/* Invitación ambiental visible desde el pasillo; se respeta movimiento reducido. */
+@keyframes invite-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-12px) rotate(1deg); } }
+@keyframes fact-wave { 0%, 65%, 100% { transform: translateY(0); } 75% { transform: translateY(-7px); } }
+.welcome.is-active .welcome__invite { animation: invite-float 5s ease-in-out infinite; }
+.welcome.is-active .facts li { animation: fact-wave 6s ease-in-out infinite; }
+.welcome.is-active .facts li:nth-child(2) { animation-delay: 0.3s; }
+.welcome.is-active .facts li:nth-child(3) { animation-delay: 0.6s; }

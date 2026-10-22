@@ -27,7 +27,7 @@ Comprueba `https://…workers.dev/api/health` → debe responder `"ok":true`.
 
 1. En `web/js/config.js`, pon la URL de la API en `apiBase` (la línea del valor de producción).
 2. Sube el repositorio a GitHub y activa Pages con la carpeta `web/` (el flujo `.github/workflows/pages.yml` lo publica en cada push a `main`).
-3. Abre la URL pública, activa la tablet con la clave del personal y juega una partida de prueba. Comprueba en `staff.html` que aparece.
+3. Abre la URL pública en una ventana privada y juega una partida de prueba sin clave del personal. Comprueba en `staff.html` que aparece.
 
 Mientras `apiBase` esté vacío, la web pública funciona **solo en modo demostración** (no guarda datos y lo indica).
 
@@ -55,3 +55,15 @@ npx wrangler d1 execute reto-viteba --remote --command "DELETE FROM participatio
 - **iPad**: abre la URL en Safari → Compartir → «Añadir a pantalla de inicio» (se abre a pantalla completa). Después: Ajustes → Accesibilidad → **Acceso guiado** → activar, y triple clic en el botón superior con el juego abierto. Desactiva el bloqueo automático (Ajustes → Pantalla y brillo → Nunca).
 - **Android**: Chrome → menú → «Añadir a pantalla de inicio»; luego Ajustes → Seguridad → **Fijar aplicación**. Pantalla siempre activa mientras carga.
 - Volumen al 30-40 %, brillo alto, tablet enchufada, wifi del stand o datos móviles compartidos.
+
+## Actualización 1.1: nombre y acceso por QR
+
+Antes de publicar el frontend actualizado:
+
+1. Para la base existente, ejecutar una sola vez `wrangler d1 execute reto-viteba --remote --file=migrations/0001_first_name.sql`. No ejecutarlo sobre una base nueva creada ya con el schema actualizado.
+2. Desplegar el Worker (`npm run deploy`). La API conserva la compatibilidad con tablets activadas anteriormente y protege panel y exportación con sus claves habituales.
+3. Publicar el frontend mediante GitHub Pages.
+
+El endpoint público `/api/play/session` emite una credencial temporal de 2 horas vinculada a un UUID. No permite recuperar una participación ya registrada ni acceder a otras partidas. Se mantiene el límite de 40 registros por 5 minutos por origen de red, identificado mediante hash con pepper, sin guardar la IP en claro. El nombre se exporta como columna «Nombre». El código interno se conserva para incidencias y entregas.
+
+Validación local: 20 pruebas de API y Excel superadas, incluyendo sesión pública, aislamiento entre partidas, reintentos, validación del nombre, exportación y límite de registros. No ejecutar estas pruebas contra producción durante el congreso: crean registros de prueba.
