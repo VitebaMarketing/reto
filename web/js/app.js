@@ -9,7 +9,7 @@ import { createConfetti } from './confetti.js';
 import { pickQuestions, rememberUse } from './game.js';
 import { checkEmail, checkPhone, PREFIXES } from './validate.js';
 import { enter, leave, isReduced, watchFrames, onHold, wait } from './motion.js';
-import { downloadParticipantsExcel } from './export.js';
+import { downloadParticipantsExcel, fetchParticipants } from './export.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -582,7 +582,7 @@ async function reset() {
   resetForm();
   confetti.stop();
   sound.stopMusic(0.8);
-  for (const dialog of [el.idleDialog, el.privacyDialog, el.deliverErrorDialog, el.staffDialog, exportDialog]) {
+  for (const dialog of [el.idleDialog, el.privacyDialog, el.deliverErrorDialog, el.staffDialog, exportDialog, recordsDialog]) {
     if (dialog.open) dialog.close();
   }
   el.toast.hidden = true;
@@ -700,6 +700,87 @@ exportDialog.addEventListener('close', () => {
   $('#export-msg').textContent = '';
 });
 
+// Ver registros desde la bienvenida: misma protección que la exportación (clave de administración
+// en cada uso). Solo lectura: no modifica ni borra nada, y la lista se vacía al cerrar.
+const recordsDialog = $('#records-dialog');
+let recordsData = [];
+
+function renderRecords() {
+  const term = $('#records-search').value.trim().toLowerCase();
+  const rows = recordsData.filter((r) => !term
+    || [r.code, r.first_name, r.contact].some((v) => String(v || '').toLowerCase().includes(term)));
+  const fmt = (iso) => (iso ? new Date(iso).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '');
+  $('#records-rows').replaceChildren(...rows.map((r) => {
+    const tr = document.createElement('tr');
+    const cells = [
+      fmt(r.created_at),
+      r.code,
+      r.first_name || '—',
+      r.contact + (r.is_duplicate ? ' · repetido' : ''),
+      r.marketing_consent ? 'Sí' : 'No',
+      r.score === null || r.score === undefined ? '—' : `${r.score} de 3`,
+      r.delivered_at ? `Entregada ${fmt(r.delivered_at)}` : 'Pendiente',
+    ];
+    for (const text of cells) {
+      const td = document.createElement('td');
+      td.textContent = text;
+      tr.append(td);
+    }
+    return tr;
+  }));
+  const consent = recordsData.filter((r) => r.marketing_consent).length;
+  $('#records-summary').textContent = term
+    ? `${rows.length} de ${recordsData.length} registros`
+    : `${recordsData.length} registros · ${consent} aptos para comunicaciones comerciales`;
+}
+
+$('#records-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const password = $('#records-password');
+  const msg = $('#records-msg');
+  const submit = $('#records-submit');
+  if (api.demo) {
+    msg.textContent = 'Modo demostración: no hay datos guardados que mostrar.';
+    password.value = '';
+    return;
+  }
+  msg.textContent = '';
+  submit.disabled = true;
+  try {
+    const res = await fetch(`${CONFIG.apiBase}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password.value, scope: 'panel' }),
+    });
+    const data = await res.json().catch(() => null);
+    if (res.status === 429) throw new Error('Demasiados intentos. Espera 15 minutos.');
+    if (!res.ok || !data || data.role !== 'admin') throw new Error('Clave de administración incorrecta.');
+    recordsData = (await fetchParticipants(CONFIG.apiBase, data.token)).reverse(); // más recientes primero
+    $('#records-search').value = '';
+    renderRecords();
+    $('#records-form').hidden = true;
+    $('#records-view').hidden = false;
+  } catch (err) {
+    msg.textContent = err instanceof TypeError || err.message === 'export_failed'
+      ? 'No se han podido cargar los registros. Revisa la conexión.'
+      : err.message;
+  } finally {
+    password.value = '';
+    submit.disabled = false;
+  }
+});
+$('#records-search').addEventListener('input', renderRecords);
+recordsDialog.addEventListener('close', () => {
+  recordsData = [];
+  $('#records-rows').replaceChildren();
+  $('#records-summary').textContent = '';
+  $('#records-search').value = '';
+  $('#records-password').value = '';
+  $('#records-msg').textContent = '';
+  $('#records-view').hidden = true;
+  $('#records-form').hidden = false;
+});
+
 onHold($('#logo'), 1500, openStaffMenu);
 onHold(el.deliver, 1200, deliver);
 
@@ -763,6 +844,7 @@ const actions = {
   back: () => { if (!busy && step === 'form') { resetForm(); setStep('choose'); } },
   privacy: () => el.privacyDialog.showModal(),
   export: () => { if (screen === 'welcome') exportDialog.showModal(); },
+  records: () => { if (screen === 'welcome') recordsDialog.showModal(); },
   'retry-register': () => { if (pendingRegistration && step === 'error') sendRegistration(); },
   'cancel-register': () => reset(),
   begin,

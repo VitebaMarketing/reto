@@ -57,3 +57,18 @@ export async function downloadParticipantsExcel(apiBase, token) {
   setTimeout(() => URL.revokeObjectURL(url), 10000);
   return { total: all.rows.length, marketing: marketing.rows.length };
 }
+
+// Lista completa para consultarla en pantalla (solo lectura; no se guarda en el navegador).
+export async function fetchParticipants(apiBase, token) {
+  const res = await fetch(`${apiBase}/api/admin/export.csv?scope=all&format=json`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !data || !data.ok) {
+    const err = new Error('export_failed');
+    err.status = res.status;
+    throw err;
+  }
+  return data.rows;
+}

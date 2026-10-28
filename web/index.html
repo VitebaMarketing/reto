@@ -61,10 +61,16 @@
           </button>
         </div>
         <div class="welcome__invite" aria-hidden="true"><span>✓</span><b>¿Te atreves con el reto?</b><small>Toca la pantalla y juega</small></div>
-        <button class="export-btn" type="button" data-action="export" aria-label="Exportar participantes a Excel (solo administración)">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Exportar</span>
-        </button>
+        <div class="admin-tools">
+          <button class="export-btn" type="button" data-action="export" aria-label="Exportar participantes a Excel (solo administración)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Exportar</span>
+          </button>
+          <button class="export-btn" type="button" data-action="records" aria-label="Ver registros de participantes (solo administración)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14M5 12h14M5 17.5h9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <span>Ver registros</span>
+          </button>
+        </div>
       </section>
 
       <!-- 2 · Registro -->
@@ -275,6 +281,31 @@
       <p class="field-error" id="export-msg" role="alert"></p>
       <button class="btn" type="submit" id="export-submit">Descargar Excel</button>
     </form>
+    <button class="text-link" type="button" data-close>Cerrar</button>
+  </dialog>
+
+  <!-- Ver registros (solo administración, solo lectura) -->
+  <dialog class="dialog dialog--records" id="records-dialog" aria-labelledby="records-title">
+    <h2 class="dialog__title" id="records-title">Registros</h2>
+    <form id="records-form" autocomplete="off">
+      <p class="dialog__text">Consulta todos los participantes registrados. Solo administración de Viteba.</p>
+      <label class="dialog__label" for="records-password">Clave de administración</label>
+      <input class="dialog__input" id="records-password" type="password" autocomplete="off" required>
+      <p class="field-error" id="records-msg" role="alert"></p>
+      <button class="btn" type="submit" id="records-submit">Ver registros</button>
+    </form>
+    <div class="records" id="records-view" hidden>
+      <div class="records__bar">
+        <p class="records__summary" id="records-summary"></p>
+        <input class="records__search" id="records-search" type="search" placeholder="Buscar nombre, contacto o código" autocomplete="off" aria-label="Buscar en los registros">
+      </div>
+      <div class="records__table">
+        <table>
+          <thead><tr><th>Fecha y hora</th><th>Código</th><th>Nombre</th><th>Contacto</th><th>Comercial</th><th>Aciertos</th><th>Muestra</th></tr></thead>
+          <tbody id="records-rows"></tbody>
+        </table>
+      </div>
+    </div>
     <button class="text-link" type="button" data-close>Cerrar</button>
   </dialog>
 
