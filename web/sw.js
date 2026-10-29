@@ -1,7 +1,7 @@
 // Service worker mínimo: siempre intenta la red (versión más reciente) y, si falla,
 // sirve la copia guardada para que la tablet pueda recargar aunque el wifi del recinto flaquee.
 // Nunca toca las llamadas a la API: un registro solo vale si el servidor lo confirma.
-const CACHE = 'reto-viteba-v3';
+const CACHE = 'reto-viteba-v4';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
