@@ -31,7 +31,7 @@ const el = {
   feedback: $('#feedback'), feedbackBadge: $('#feedback-badge'), feedbackText: $('#feedback-text'),
   answers: $('#answers'), next: $('#next'), nextLabel: $('#next-label'),
   rewardScore: $('#reward-score'), rewardCode: $('#reward-code'),
-  deliver: $('#deliver'), deliverLabel: $('#deliver-label'), deliverHint: $('#deliver-hint'),
+  deliver: $('#deliver'), deliverLabel: $('#deliver-label'),
   toast: $('#toast'), live: $('#live'),
   idleDialog: $('#idle-dialog'), idleSeconds: $('#idle-seconds'),
   privacyDialog: $('#privacy-dialog'), deliverErrorDialog: $('#deliver-error-dialog'),
@@ -74,7 +74,6 @@ function applyCopy() {
     return li;
   }));
   el.deliverLabel.textContent = COPY.reward.deliver;
-  el.deliverHint.textContent = COPY.reward.deliverHint;
   $('#prizes').setAttribute('aria-label', COPY.reward.productAlt);
   $('#prizes-ring').replaceChildren(...CONFIG.prizes.map((prize, i) => {
     const item = document.createElement('div');
@@ -555,18 +554,7 @@ async function deliver() {
   if (run !== runId) return;
   track('reward_delivered');
   sound.correct();
-  await showToast(`✓ ${COPY.reward.delivered}`, 1300);
   if (run === runId) reset();
-}
-
-async function showToast(text, ms) {
-  el.toast.textContent = text;
-  el.toast.classList.remove('is-leaving');
-  el.toast.hidden = false;
-  await wait(ms);
-  el.toast.classList.add('is-leaving');
-  await wait(isReduced() ? 0 : 280);
-  el.toast.hidden = true;
 }
 
 // Deja la tablet como recién encendida: ni un dato del participante anterior en pantalla o memoria.
@@ -782,7 +770,7 @@ recordsDialog.addEventListener('close', () => {
 });
 
 onHold($('#logo'), 1500, openStaffMenu);
-onHold(el.deliver, 1200, deliver);
+el.deliver.addEventListener('click', deliver);
 
 const staffActions = {
   'staff-reset': () => {
